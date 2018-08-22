@@ -8,7 +8,7 @@ import Scene from './classes/Scene'
 // Init app
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('canvas')
-  const canvasDrawing = document.getElementById('canvasDrawing')
+  const canvasDrawing = document.getElementById('canvasdrawing')
 
   const scene = new Scene(canvas, canvasDrawing)
 })

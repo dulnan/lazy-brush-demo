@@ -1,11 +1,45 @@
+$color-red:     #ff3a29;
+$color-grey:    #dddddd;
+$color-black:   #111111;
+
+@font-face {
+  font-family: "Colfax";
+  src: url(../fonts/ColfaxWebLight.woff);
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Colfax";
+  src: url(../fonts/ColfaxWebBold.woff);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Colfax";
+  src: url(../fonts/ColfaxWebRegular.woff);
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Colfax";
+  src: url(../fonts/ColfaxWebBlack.woff);
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "Colfax";
+  src: url(../fonts/ColfaxWebMedium.woff);
+  font-weight: 500;
+}
+
 html, body {
   height: 100%;
   width: 100%;
   font-size: 100%;
-  font-family: 'Roboto', sans-serif;
-  text-align: center;
+  font-family: 'Colfax', sans-serif;
   font-weight: lighter;
   padding: 0;
+  color: $color-black;
 }
 
 a {
@@ -35,8 +69,37 @@ button {
 
 .canvas {
   display: block;
-  cursor: none;
+  // cursor: none;
   position: absolute;
   width: 100vw;
   height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+h1 {
+  font-size: 5rem;
+  margin: 0;
+  color: $color-red;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 100;
+  color: #999;
+}
+
+main {
+  padding: 2rem;
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: flex-end;
 }

@@ -3,6 +3,13 @@ import { Catenary } from 'catenary-curve'
 
 const LAZY_RADIUS = 300
 
+function midPointBtw(p1, p2) {
+  return {
+    x: p1.x + (p2.x - p1.x) / 2,
+    y: p1.y + (p2.y - p1.y) / 2
+  };
+}
+
 export default class Scene {
   constructor (canvas, canvasDrawing) {
     this.canvas = canvas
@@ -29,15 +36,14 @@ export default class Scene {
 
     this.startTime = 0
 
-    this.counter = 0
-    this.total = 0
+    this.points = []
+    this.prevBrush = new Point(0, 0)
 
     this.init()
   }
 
   init () {
-
-
+    
     this.width = window.innerWidth
     this.height = window.innerHeight
 
@@ -50,18 +56,48 @@ export default class Scene {
       this[c].style.height = window.innerHeight
     })
 
-    this.canvas.addEventListener('mousedown', (e) => {
+    this.contextDrawing.lineWidth = 20
+    this.contextDrawing.lineJoin = 'round'
+    this.contextDrawing.lineCap = 'round'
+
+
+    window.addEventListener('mousedown', (e) => {
       this.isDrawing = true
+      this.points.push({ x: e.clientX, y: e.clientY })
     })
 
-    this.canvas.addEventListener('mouseup', (e) => {
+    window.addEventListener('mouseup', (e) => {
       this.isDrawing = false
+      this.points.length = 0
     })
 
-    this.canvas.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
+      const hasChanged = this.lazy.update({ x: e.clientX, y: e.clientY })
       this.mouseHasMoved = true
-      this.mouseBuffer.x = e.clientX
-      this.mouseBuffer.y = e.clientY
+
+      if (this.isDrawing && this.lazy.hasMoved()) {
+        this.points.push(this.lazy.brush.toObject())
+
+        var p1 = this.points[0]
+        var p2 = this.points[1]
+        
+        this.contextDrawing.moveTo(p2.x, p2.y)
+        this.contextDrawing.beginPath()
+
+        for (var i = 1, len = this.points.length; i < len; i++) {
+          // we pick the point between pi+1 & pi+2 as the
+          // end point and p1 as our control point
+          var midPoint = midPointBtw(p1, p2)
+          this.contextDrawing.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+          p1 = this.points[i]
+          p2 = this.points[i+1];
+        }
+        // Draw last line as a straight line while
+        // we wait for the next point to be able to calculate
+        // the bezier control point
+        // this.contextDrawing.lineTo(p1.x, p1.y)
+        this.contextDrawing.stroke()
+      }
     })
 
     this.startTime = window.performance.now();
@@ -78,11 +114,9 @@ export default class Scene {
 
   loop () {
     if (this.mouseHasMoved) {
-      const hasChanged = this.lazy.update(this.mouseBuffer)
 
       const pointer = this.lazy.getPointerCoordinates()
       const brush = this.lazy.getBrushCoordinates()
-      const radius = this.lazy.getRadius()
 
       this.context.clearRect(0, 0, this.width, this.height)
 
@@ -98,7 +132,6 @@ export default class Scene {
       this.counter++
 
       this.context.stroke()
-      this.context.setLineDash([])
 
       // Draw brush point
       this.context.beginPath()
