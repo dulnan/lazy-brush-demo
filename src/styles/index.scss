@@ -33,9 +33,10 @@ button {
   }
 }
 
-#canvas {
-  width: 100vw;
-  height: 100vh;
+.canvas {
   display: block;
   cursor: none;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
 }
