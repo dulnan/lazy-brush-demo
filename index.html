@@ -6,13 +6,17 @@
   <title>catenary-test</title>
 </head>
 <body>
-  <main>
-    <div>
-      <h1>LazyBrush</h1>
-      <h2>Smooth canvas drawing with a mouse or any pointing device.</h2>
+  <main style="width: 24rem">
+    <div class="content">
+      <h1>Lazy Brush</h1>
+      <h2>Smooth movement for canvas drawing.</h2>
+      <p>This library provides the math needed to implement a so called "lazy brush". It takes a radius and the {x,y} coordinates of a mouse/pointer and calculates the position of the brush. The brush will only move when the pointer is outside of the "lazy area" of the brush. With this technique it's possible to freely draw smooth lines and curves with just a pointer or finger.</p>
+      <canvas class="debug-canvas" id="canvasdebug" style="width: 100%; height: 24rem"></canvas>
     </div>
   </main>
+
   <canvas class="canvas" id="canvas"></canvas>
   <canvas class="canvas" id="canvasdrawing"></canvas>
+  <canvas class="canvas" id="canvastemp"></canvas>
 </body>
 </html>

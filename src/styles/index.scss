@@ -37,9 +37,9 @@ html, body {
   width: 100%;
   font-size: 100%;
   font-family: 'Colfax', sans-serif;
-  font-weight: lighter;
   padding: 0;
   color: $color-black;
+  user-select: none;
 }
 
 a {
@@ -78,8 +78,15 @@ button {
   z-index: 0;
 }
 
+#canvas {
+  z-index: 10;
+}
+
+#canvasdebug {
+}
+
 h1 {
-  font-size: 5rem;
+  font-size: 1.75rem;
   margin: 0;
   color: $color-red;
   text-transform: uppercase;
@@ -87,9 +94,16 @@ h1 {
 
 h2 {
   margin: 0;
-  font-size: 3rem;
-  font-weight: 100;
-  color: #999;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: (22 / 15);
+}
+
+p {
+  font-size: (15 / 16) * 1rem;
+  color: #aaa;
+  line-height: (22 / 15);
+  text-align: justify;
 }
 
 main {
@@ -101,5 +115,5 @@ main {
   left: 0;
   right: 0;
   bottom: 0;
-  align-items: flex-end;
+  align-items: flex-start;
 }

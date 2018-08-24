@@ -9,6 +9,8 @@ import Scene from './classes/Scene'
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('canvas')
   const canvasDrawing = document.getElementById('canvasdrawing')
+  const canvasTemp = document.getElementById('canvastemp')
+  const canvasDebug = document.getElementById('canvasdebug')
 
-  const scene = new Scene(canvas, canvasDrawing)
+  const scene = new Scene(canvas, canvasDrawing, canvastemp, canvasdebug)
 })
