@@ -12,6 +12,18 @@
       <h2>Smooth movement for canvas drawing.</h2>
       <p>This library provides the math needed to implement a so called "lazy brush". It takes a radius and the {x,y} coordinates of a mouse/pointer and calculates the position of the brush. The brush will only move when the pointer is outside of the "lazy area" of the brush. With this technique it's possible to freely draw smooth lines and curves with just a pointer or finger.</p>
       <canvas class="debug-canvas" id="canvasdebug" style="width: 100%; height: 24rem"></canvas>
+
+      <label for="lazy">Brush radius</label>
+      <input class="range" type="range" id="rangeradius" name="radius" min="2" max="100" />
+
+      <label for="lazy">Lazy radius</label>
+      <input class="range" type="range" id="rangelazy" name="lazy" min="2" max="190" />
+
+      <label>
+        <input class="checkbox" type="checkbox" id="checkboxlazy" checked /> Use lazy brush
+      </label>
+
+      <button class="button-clear" id="buttonclear">Clear canvas</button>
     </div>
   </main>
 

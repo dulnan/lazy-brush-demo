@@ -2,6 +2,8 @@ $color-red:     #ff3a29;
 $color-grey:    #dddddd;
 $color-black:   #111111;
 
+@import 'range';
+
 @font-face {
   font-family: "Colfax";
   src: url(../fonts/ColfaxWebLight.woff);
@@ -31,6 +33,10 @@ $color-black:   #111111;
   src: url(../fonts/ColfaxWebMedium.woff);
   font-weight: 500;
 }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 html, body {
   height: 100%;
@@ -48,23 +54,29 @@ a {
 
 button {
   cursor: pointer;
-  outline:none;
+  outline: none;
   font-weight: 300;
-  background-color: #1dce94;
+  background-color: white;
   border: none;
-  border-radius: 500px;
-  color: white;
-  padding:0.5rem 1rem;
+  color: black;
+  padding: 1rem 1rem;
   transition: all 0.3s;
+  text-align: left;
+  border: 2px solid $color-red;
+  color: $color-red;
 
   &:hover{
-    color: #1dce94;
-    background-color: white;
+    background-color: #eee;
   }
 
   &:active{
     background-color: #cbcbcb;
   }
+}
+
+.button-clear {
+  width: 100%;
+  display: block;
 }
 
 .canvas {
@@ -109,11 +121,37 @@ p {
 main {
   padding: 2rem;
   position: absolute;
-  z-index: 1;
+  z-index: 50;
   display: flex;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   align-items: flex-start;
+  background: white;
+  border-right: 1px solid #ddd;
+}
+
+.range {
+  width: 100%;
+  display: block;
+}
+
+.content {
+  .range {
+    margin: 1rem 0 2rem;
+  }
+  .checkbox {
+    margin-bottom: 2rem;
+  }
+}
+
+label, button {
+  text-transform: uppercase;
+  font-size: (13 / 16) * 1rem;
+  font-weight: 500;
+}
+
+label {
+  color: #666;
 }

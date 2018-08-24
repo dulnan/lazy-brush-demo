@@ -12,5 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvasTemp = document.getElementById('canvastemp')
   const canvasDebug = document.getElementById('canvasdebug')
 
-  const scene = new Scene(canvas, canvasDrawing, canvastemp, canvasdebug)
+  const rangeRadius = document.getElementById('rangeradius')
+  const rangeLazy = document.getElementById('rangelazy')
+
+  const checkboxLazy = document.getElementById('checkboxlazy')
+
+  const buttonClear = document.getElementById('buttonclear')
+
+  const scene = new Scene(canvas, canvasDrawing, canvastemp, canvasdebug, rangeRadius, rangeLazy, checkboxLazy, buttonClear)
 })
