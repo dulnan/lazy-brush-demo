@@ -1,9 +1,12 @@
+import styleVariables from '!!sass-variable-loader!./../styles/_variables.scss'
+
 import { LazyBrush, Point } from 'lazy-brush'
 import { Catenary } from 'catenary-curve'
 
-const LAZY_RADIUS = 100
-const COLOR_RED = '#ff3a29'
-const BRUSH_RADIUS = 20
+import ResizeObserver from 'resize-observer-polyfill'
+
+const LAZY_RADIUS = 60
+const BRUSH_RADIUS = 12.5
 
 function midPointBtw(p1, p2) {
   return {
@@ -13,166 +16,259 @@ function midPointBtw(p1, p2) {
 }
 
 export default class Scene {
-  constructor (canvas, canvasDrawing, canvasTemp, canvasDebug, rangeRadius, rangeLazy, checkboxLazy, buttonClear) {
-    this.checkboxLazy = checkboxLazy
-    this.buttonClear = buttonClear
+  constructor ({ canvasContainer, sidebar, canvas, slider, button }) {
+    this.sidebar = document.getElementById(sidebar)
+    this.canvasContainer = document.getElementById(canvasContainer)
 
-    this.rangeRadius = rangeRadius
-    this.rangeLazy = rangeLazy
+    this.button = {}
+    Object.keys(button).forEach(b => {
+      this.button[b] = document.getElementById(button[b])
+    })
 
-    this.canvas = canvas
-    this.canvasDrawing = canvasDrawing
-    this.canvasTemp = canvasTemp
-    this.canvasDebug = canvasDebug
+    this.slider = {}
+    Object.keys(slider).forEach(s => {
+      this.slider[s] = document.getElementById(slider[s])
+    })
 
-    this.context = this.canvas.getContext('2d')
-    this.contextDrawing = this.canvasDrawing.getContext('2d')
-    this.contextTemp = this.canvasTemp.getContext('2d')
-    this.contextDebug = this.canvasDebug.getContext('2d')
+    this.canvas = {}
+    this.context = {}
+    Object.keys(canvas).forEach(c => {
+      const el = document.getElementById(canvas[c])
+      this.canvas[c] = el
+      this.context[c] = el.getContext('2d')
+    })
 
     this.catenary = new Catenary({
       chainLength: LAZY_RADIUS
     })
 
-    this.lazy = new LazyBrush({ radius: LAZY_RADIUS, enabled: true })
+    this.lazy = new LazyBrush({
+      radius: LAZY_RADIUS,
+      enabled: true,
+      initialPoint: {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2
+      }
+    })
 
-    this.width = 0
-    this.height = 0
-
-    this.pBprev = new Point(0, 0)
     this.points = []
 
-    this.mouseBuffer = new Point(0, 0)
-
-    this.mouseHasMoved = false
-    this.valuesChanged = false
+    this.mouseHasMoved = true
+    this.valuesChanged = true
     this.isDrawing = false
     this.isPressing = false
 
-    this.startTime = 0
-
     this.points = []
-    this.prevBrush = new Point(0, 0)
 
     this.brushRadius = BRUSH_RADIUS
     this.chainLength = LAZY_RADIUS
-
-    this.init()
   }
 
   init () {
-    this.width = window.innerWidth
-    this.height = window.innerHeight
+    // Listeners for mouse events
+    this.canvas.interface.addEventListener('mousedown', this.handlePointerDown.bind(this))
+    this.canvas.interface.addEventListener('mouseup', this.handlePointerUp.bind(this))
+    this.canvas.interface.addEventListener('mousemove', (e) => this.handlePointerMove(e.clientX, e.clientY))
+    this.canvas.interface.addEventListener('contextmenu', (e) => this.handleContextMenu(e))
 
-    const canvases = ['canvas', 'canvasDrawing', 'canvasTemp']
+    // Listeners for touch events
+    this.canvas.interface.addEventListener('touchstart', (e) => this.handleTouchStart(e))
+    this.canvas.interface.addEventListener('touchend', (e) => this.handleTouchEnd(e))
+    this.canvas.interface.addEventListener('touchmove', (e) => this.handleTouchMove(e))
 
-    canvases.forEach(c => {
-      this[c].width = window.innerWidth
-      this[c].height = window.innerHeight
-      this[c].style.width = window.innerWidth
-      this[c].style.height = window.innerHeight
-    })
+    // Listeners for click events on butons
+    this.button.menu.addEventListener('click', (e) => this.handleButtonMenu(e))
+    this.button.clear.addEventListener('click', (e) => this.handleButtonClear(e))
+    this.button.lazy.addEventListener('click', (e) => this.handleButtonLazy(e))
 
-    const debugRect = this.canvasDebug.getBoundingClientRect()
-    this.canvasDebug.width = debugRect.width
-    this.canvasDebug.height = debugRect.height
-    this.canvasDebug.style.width = debugRect.width
-    this.canvasDebug.style.height = debugRect.height
+    // Listeners for input events on range sliders
+    this.slider.brush.addEventListener('input', (e) => this.handleSliderBrush(e))
+    this.slider.lazy.addEventListener('input', (e) => this.handleSliderLazy(e))
 
-    this.contextTemp.lineJoin = 'round'
-    this.contextTemp.lineCap = 'round'
-    this.contextTemp.strokeStyle = COLOR_RED
+    // Set initial value for range sliders
+    this.slider.brush.value = BRUSH_RADIUS
+    this.slider.lazy.value = LAZY_RADIUS
 
+    const observeCanvas = new ResizeObserver((entries, observer) => this.handleCanvasResize(entries, observer))
+    observeCanvas.observe(this.canvasContainer)
 
-    this.canvas.addEventListener('mousedown', (e) => {
-      this.isPressing = true
-    })
+    const observeSidebar = new ResizeObserver((entries, observer) => this.handleSidebarResize(entries, observer))
+    observeSidebar.observe(this.sidebar)
 
-    this.canvas.addEventListener('mouseup', (e) => {
-      this.isDrawing = false
-      this.isPressing = false
-      this.points.length = 0
-      this.contextDrawing.drawImage(this.canvasTemp, 0, 0)
-    })
-
-    this.canvas.addEventListener('mousemove', (e) => {
-      const hasChanged = this.lazy.update({ x: e.clientX, y: e.clientY })
-      const isDisabled = !this.lazy.isEnabled()
-
-      if ((this.isPressing && hasChanged && !this.isDrawing) || (isDisabled && this.isPressing)) {
-        this.isDrawing = true
-        this.points.push(this.lazy.brush.toObject())
-      }
-
-      if (this.isDrawing && (this.lazy.hasMoved() || isDisabled)) {
-
-        this.contextTemp.clearRect(0, 0, this.width, this.height)
-        this.contextTemp.lineWidth = this.brushRadius * 2
-        this.points.push(this.lazy.brush.toObject())
-
-        var p1 = this.points[0]
-        var p2 = this.points[1]
-
-        this.contextTemp.moveTo(p2.x, p2.y)
-        this.contextTemp.beginPath()
-
-        for (var i = 1, len = this.points.length; i < len; i++) {
-          // we pick the point between pi+1 & pi+2 as the
-          // end point and p1 as our control point
-          var midPoint = midPointBtw(p1, p2)
-          this.contextTemp.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
-          p1 = this.points[i]
-          p2 = this.points[i+1];
-        }
-        // Draw last line as a straight line while
-        // we wait for the next point to be able to calculate
-        // the bezier control point
-        this.contextTemp.lineTo(p1.x, p1.y)
-        this.contextTemp.stroke()
-      }
-
-      this.mouseHasMoved = true
-    })
-
-    this.buttonClear.addEventListener('click', () => {
-      this.valuesChanged = true
-      this.contextDrawing.clearRect(0, 0, this.width, this.height)
-      this.contextTemp.clearRect(0, 0, this.width, this.height)
-    })
-
-    this.checkboxLazy.addEventListener('change', (e) => {
-      this.valuesChanged = true
-      if (e.target.checked) {
-        this.lazy.enable()
-      } else {
-        this.lazy.disable()
-      }
-    })
-
-    this.rangeRadius.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value)
-      this.valuesChanged = true
-      this.brushRadius = val
-
-      this.rangeLazy.setAttribute('min', val + 10)
-    })
-
-    this.rangeLazy.addEventListener('input', (e) => {
-      this.valuesChanged = true
-      const val = parseInt(e.target.value)
-      this.chainLength = val
-      this.lazy.setRadius(val)
-      this.catenary.setChainLength(val)
-    })
-
-    this.rangeRadius.value = BRUSH_RADIUS
-    this.rangeLazy.value = LAZY_RADIUS
-
-    this.startTime = window.performance.now();
     this.loop()
+
+    const initX = window.innerWidth / 2
+    const initY = window.innerHeight / 2
+    // this.lazy.update({x: initX, y: initY}, { both: false })
+    this.mouseHasMoved = true
   }
 
-  loop () {
+  handleTouchStart (e) {
+    const x = e.changedTouches[0].clientX
+    const y = e.changedTouches[0].clientY
+    this.lazy.update({x: x, y: y}, { both: true })
+    this.handlePointerDown(e)
+
+    this.mouseHasMoved = true
+  }
+
+  handleTouchMove (e) {
+    e.preventDefault()
+    this.handlePointerMove(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+  }
+
+  handleTouchEnd (e) {
+    this.handlePointerUp(e)
+    const brush = this.lazy.getBrushCoordinates()
+    this.lazy.update({x: brush.x, y: brush.y}, { both: true })
+    this.mouseHasMoved = true
+
+  }
+
+  handleContextMenu (e) {
+    e.preventDefault()
+    if (e.button === 2) {
+      this.clearCanvas()
+    }
+  }
+
+  handleButtonMenu () {
+    e.preventDefault()
+    document.body.classList.toggle('menu-visible')
+  }
+
+  handleButtonClear (e) {
+    e.preventDefault()
+    this.clearCanvas()
+  }
+
+  handleButtonLazy (e) {
+    e.preventDefault()
+    this.valuesChanged = true
+    this.button.lazy.classList.toggle('disabled')
+
+    if (this.lazy.isEnabled()) {
+      this.button.lazy.innerHTML = 'Off'
+      this.lazy.disable()
+    } else {
+      this.button.lazy.innerHTML = 'On'
+      this.lazy.enable()
+    }
+  }
+
+  handleSidebarResize (entries, observer) {
+    for (const entry of entries) {
+      const {left, top, width, height} = entry.contentRect
+      this.setCanvasSize(this.canvas.debug, width, width)
+    }
+  }
+
+  handleCanvasResize (entries, observer) {
+    for (const entry of entries) {
+      const {left, top, width, height} = entry.contentRect
+      console.log(height)
+      this.setCanvasSize(this.canvas.interface, width, height)
+      this.setCanvasSize(this.canvas.drawing, width, height)
+      this.setCanvasSize(this.canvas.temp, width, height)
+      this.setCanvasSize(this.canvas.grid, width, height)
+
+      this.drawGrid(this.context.grid)
+      this.loop({ once: true })
+    }
+  }
+
+  handleSliderBrush (e) {
+    const val = parseInt(e.target.value)
+    this.valuesChanged = true
+    this.brushRadius = val
+
+    this.slider.lazy.setAttribute('min', val + 10)
+  }
+
+  handleSliderLazy (e) {
+    this.valuesChanged = true
+    const val = parseInt(e.target.value)
+    this.chainLength = val
+    this.lazy.setRadius(val)
+    this.catenary.setChainLength(val)
+  }
+
+  setCanvasSize (canvas, width, height) {
+    canvas.width = width * window.devicePixelRatio
+    canvas.height = height * window.devicePixelRatio
+    canvas.style.width = width
+    canvas.style.height = height
+    canvas.getContext('2d').scale(window.devicePixelRatio, window.devicePixelRatio)
+  }
+
+  handlePointerDown (e) {
+    e.preventDefault()
+    this.isPressing = true
+  }
+
+  handlePointerUp (e) {
+    e.preventDefault()
+    this.isDrawing = false
+    this.isPressing = false
+    this.points.length = 0
+
+    const width = this.canvas.temp.width / window.devicePixelRatio
+    const height = this.canvas.temp.height / window.devicePixelRatio
+
+    this.context.drawing.drawImage(this.canvas.temp, 0, 0, width, height)
+    this.context.temp.clearRect(0, 0, width, height)
+  }
+
+  handlePointerMove (x, y) {
+    const hasChanged = this.lazy.update({ x: x, y: y})
+    const isDisabled = !this.lazy.isEnabled()
+
+    this.context.temp.lineJoin = 'round'
+    this.context.temp.lineCap = 'round'
+    this.context.temp.strokeStyle = styleVariables.colorPrimary
+
+    if ((this.isPressing && hasChanged && !this.isDrawing) || (isDisabled && this.isPressing)) {
+      this.isDrawing = true
+      this.points.push(this.lazy.brush.toObject())
+    }
+
+    if (this.isDrawing && (this.lazy.hasMoved() || isDisabled)) {
+
+      this.context.temp.clearRect(0, 0, this.context.temp.canvas.width, this.context.temp.canvas.height)
+      this.context.temp.lineWidth = this.brushRadius * 2
+      this.points.push(this.lazy.brush.toObject())
+
+      var p1 = this.points[0]
+      var p2 = this.points[1]
+
+      this.context.temp.moveTo(p2.x, p2.y)
+      this.context.temp.beginPath()
+
+      for (var i = 1, len = this.points.length; i < len; i++) {
+        // we pick the point between pi+1 & pi+2 as the
+        // end point and p1 as our control point
+        var midPoint = midPointBtw(p1, p2)
+        this.context.temp.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+        p1 = this.points[i]
+        p2 = this.points[i+1];
+      }
+      // Draw last line as a straight line while
+      // we wait for the next point to be able to calculate
+      // the bezier control point
+      this.context.temp.lineTo(p1.x, p1.y)
+      this.context.temp.stroke()
+    }
+
+    this.mouseHasMoved = true
+  }
+
+  clearCanvas () {
+    this.valuesChanged = true
+    this.context.drawing.clearRect(0, 0, this.canvas.drawing.width, this.canvas.drawing.height)
+    this.context.temp.clearRect(0, 0, this.canvas.temp.width, this.canvas.temp.height)
+  }
+
+  loop ({ once = false } = {}) {
     if (this.mouseHasMoved || this.valuesChanged) {
       const pointer = this.lazy.getPointerCoordinates()
       const brush = this.lazy.getBrushCoordinates()
@@ -181,28 +277,30 @@ export default class Scene {
       const hasMoved = this.lazy.hasMoved()
       const distance = this.lazy.getDistance()
 
-      this.drawInterface(this.context, pointer, brush)
-      this.drawDebug(this.contextDebug, pointer, brush, angle, hasMoved, distance, radius)
+      this.drawInterface(this.context.interface, pointer, brush)
+      this.drawDebug(this.context.debug, pointer, brush, angle, hasMoved, distance, radius)
       this.mouseHasMoved = false
       this.valuesChanged = false
     }
 
-    window.requestAnimationFrame(() => {
-      this.loop()
-    })
+    if (!once) {
+      window.requestAnimationFrame(() => {
+        this.loop()
+      })
+    }
   }
 
   drawDebug (ctx, pointer, brush, angle, hasMoved, distance, radius) {
     const degrees = angle * 180 / Math.PI
-    const w = ctx.canvas.width
-    const h = ctx.canvas.height
+    const w = ctx.canvas.width / window.devicePixelRatio
+    const h = ctx.canvas.height / window.devicePixelRatio
 
     ctx.clearRect(0, 0, w, h)
 
     ctx.beginPath()
-    ctx.setLineDash([2, 4])
+    // ctx.setLineDash([2, 4])
     ctx.lineWidth = 1
-    ctx.strokeStyle = '#bbb'
+    ctx.strokeStyle = styleVariables.colorDebugGrid
 
     ctx.moveTo(w / 2, 0)
     ctx.lineTo(w / 2, h)
@@ -221,29 +319,31 @@ export default class Scene {
 
     // Brush
     ctx.beginPath()
-    ctx.fillStyle = '#222222'
+    ctx.strokeStyle = styleVariables.colorDebugGrid
     ctx.arc(w / 2, h / 2, this.brushRadius, 0, Math.PI * 2, true)
-    ctx.fill()
+    ctx.stroke()
 
     // Lazy Area
     ctx.beginPath()
     ctx.lineWidth = 1
     ctx.lineCap = 'round'
-    // ctx.setLineDash([2, 4])
     if (distance > radius) {
-      ctx.strokeStyle = '#444'
+      ctx.strokeStyle = styleVariables.colorDebugLazyActive
+      ctx.setLineDash([])
     } else {
-      ctx.strokeStyle = '#bbb'
+      ctx.strokeStyle = styleVariables.colorDebugLazy
+      ctx.setLineDash([2, 4])
     }
     ctx.arc(w / 2, h / 2, radius, 0, Math.PI * 2, true)
     ctx.stroke()
+    ctx.setLineDash([])
 
     // Pointer
     const pX = (w / 2) - (brush.x - pointer.x)
     const pY = (h / 2) - (brush.y - pointer.y)
     ctx.beginPath()
-    ctx.fillStyle = '#00FFFF'
-    ctx.arc(pX, pY, 4, 0, Math.PI * 2, true)
+    ctx.fillStyle = styleVariables.colorDebugPointer
+    ctx.arc(pX, pY, 3, 0, Math.PI * 2, true)
     ctx.fill()
 
     ctx.beginPath()
@@ -254,29 +354,58 @@ export default class Scene {
     ctx.stroke()
   }
 
+  drawGrid (ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+    ctx.beginPath()
+    ctx.setLineDash([2,2])
+    // ctx.setLineDash([])
+    // ctx.strokeStyle = styleVariables.colorInterfaceGrid
+    ctx.strokeStyle = 'rgba(169,173,183,0.15)'
+    ctx.lineWidth = 1
+
+    const gridSize = 25
+
+    let countX = 0
+    while (countX < ctx.canvas.width) {
+      countX += gridSize
+      ctx.moveTo(countX, 0)
+      ctx.lineTo(countX, ctx.canvas.height)
+    }
+    ctx.stroke()
+
+    let countY = 0
+    while (countY < ctx.canvas.height) {
+      countY += gridSize
+      ctx.moveTo(0, countY)
+      ctx.lineTo(ctx.canvas.width, countY)
+    }
+    ctx.stroke()
+  }
+
   drawInterface (ctx, pointer, brush) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
     // Draw brush point
     ctx.beginPath()
-    ctx.fillStyle = COLOR_RED
+    ctx.fillStyle = styleVariables.colorPrimary
     ctx.arc(brush.x, brush.y, this.brushRadius, 0, Math.PI * 2, true)
     ctx.fill()
 
     // Draw mouse point
     ctx.beginPath()
-    ctx.fillStyle = '#222222'
-    ctx.arc(pointer.x, pointer.y, 2, 0, Math.PI * 2, true)
+    ctx.fillStyle = styleVariables.colorWhite
+    ctx.arc(pointer.x, pointer.y, 4, 0, Math.PI * 2, true)
     ctx.fill()
 
     //Draw catharina
     if (this.lazy.isEnabled()) {
       ctx.beginPath()
-      ctx.lineWidth = 1
+      ctx.lineWidth = 2
       ctx.lineCap = 'round'
       ctx.setLineDash([2, 4])
-      ctx.strokeStyle = '#444'
-      this.catenary.drawToCanvas(this.context, brush, pointer)
+      ctx.strokeStyle = styleVariables.colorCatenary
+      this.catenary.drawToCanvas(this.context.interface, brush, pointer)
       ctx.stroke()
     }
 

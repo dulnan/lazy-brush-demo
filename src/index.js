@@ -7,17 +7,26 @@ import Scene from './classes/Scene'
 
 // Init app
 document.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('canvas')
-  const canvasDrawing = document.getElementById('canvasdrawing')
-  const canvasTemp = document.getElementById('canvastemp')
-  const canvasDebug = document.getElementById('canvasdebug')
+  const scene = new Scene({
+    canvasContainer: 'canvas_container',
+    sidebar: 'sidebar',
+    canvas: {
+      interface: 'canvas_interface',
+      drawing: 'canvas_drawing',
+      temp: 'canvas_temp',
+      debug: 'canvas_debug',
+      grid: 'canvas_grid'
+    },
+    slider: {
+      brush: 'slider_brush',
+      lazy: 'slider_lazy'
+    },
+    button: {
+      lazy: 'button_lazy',
+      clear: 'button_clear',
+      menu: 'button_menu'
+    }
+  })
 
-  const rangeRadius = document.getElementById('rangeradius')
-  const rangeLazy = document.getElementById('rangelazy')
-
-  const checkboxLazy = document.getElementById('checkboxlazy')
-
-  const buttonClear = document.getElementById('buttonclear')
-
-  const scene = new Scene(canvas, canvasDrawing, canvastemp, canvasdebug, rangeRadius, rangeLazy, checkboxLazy, buttonClear)
+  scene.init()
 })

@@ -3,32 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>catenary-test</title>
+  <title>Lazy Brush</title>
+  <style>
+    </style>
 </head>
 <body>
-  <main style="width: 24rem">
+  <main id="sidebar">
     <div class="content">
-      <h1>Lazy Brush</h1>
-      <h2>Smooth movement for canvas drawing.</h2>
-      <p>This library provides the math needed to implement a so called "lazy brush". It takes a radius and the {x,y} coordinates of a mouse/pointer and calculates the position of the brush. The brush will only move when the pointer is outside of the "lazy area" of the brush. With this technique it's possible to freely draw smooth lines and curves with just a pointer or finger.</p>
-      <canvas class="debug-canvas" id="canvasdebug" style="width: 100%; height: 24rem"></canvas>
+      <div class="content__header">
+        <h1>Lazy Brush</h1>
+        <h2>Smooth curve drawing on canvas</h2>
+      </div>
+      <div class="content__aside">
+        <p>
+          This library provides the math needed to implement a "lazy brush".
+          It takes a radius, the x,y coordinates of a mouse/pointer and calculates the position of the brush.
+          The brush will only move when the pointer is outside of the "lazy area".
+          With this it's possible to freely draw smooth lines and curves with just a mouse or finger.
+        </p>
+        <canvas class="debug-canvas" id="canvas_debug"></canvas>
 
-      <label for="lazy">Brush radius</label>
-      <input class="range" type="range" id="rangeradius" name="radius" min="2" max="100" />
+        <div class="slider">
+          <label for="lazy">Brush radius</label>
+          <input class="range" type="range" id="slider_brush" name="radius" min="2" max="50" />
+        </div>
 
-      <label for="lazy">Lazy radius</label>
-      <input class="range" type="range" id="rangelazy" name="lazy" min="2" max="190" />
+        <div class="slider">
+          <label for="lazy">Lazy radius</label>
+          <input class="range" type="range" id="slider_lazy" name="lazy" min="2" max="175" />
+        </div>
+      </div>
 
-      <label>
-        <input class="checkbox" type="checkbox" id="checkboxlazy" checked /> Use lazy brush
-      </label>
 
-      <button class="button-clear" id="buttonclear">Clear canvas</button>
+      <div class="flex content__bottom">
+        <div class="flex-auto">
+          <button class="button-disable" id="button_lazy">On</button>
+        </div>
+        <div class="flex-1">
+          <button class="button-clear" id="button_clear">Clear</button>
+        </div>
+        <div class="flex-auto">
+          <button class="button-menu" id="button_menu">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
+              <path d="M 12 3 A 2 2 0 0 0 10 5 A 2 2 0 0 0 12 7 A 2 2 0 0 0 14 5 A 2 2 0 0 0 12 3 z M 12 10 A 2 2 0 0 0 10 12 A 2 2 0 0 0 12 14 A 2 2 0 0 0 14 12 A 2 2 0 0 0 12 10 z M 12 17 A 2 2 0 0 0 10 19 A 2 2 0 0 0 12 21 A 2 2 0 0 0 14 19 A 2 2 0 0 0 12 17 z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </main>
 
-  <canvas class="canvas" id="canvas"></canvas>
-  <canvas class="canvas" id="canvasdrawing"></canvas>
-  <canvas class="canvas" id="canvastemp"></canvas>
+  <div class="canvas-container" id="canvas_container">
+    <canvas class="lazy-canvas" id="canvas_interface"></canvas>
+    <canvas class="lazy-canvas" id="canvas_drawing"></canvas>
+    <canvas class="lazy-canvas" id="canvas_temp"></canvas>
+    <canvas class="lazy-canvas" id="canvas_grid"></canvas>
+  </div>
 </body>
 </html>

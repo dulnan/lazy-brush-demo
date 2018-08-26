@@ -4,27 +4,27 @@
 // Version 1.5.1
 // MIT License
 
-$track-color: #eceff1 !default;
-$thumb-color: $color-red;
+$track-color: transparent;
+$thumb-color: $color-primary;
 
-$thumb-radius: 12px !default;
-$thumb-height: 24px !default;
-$thumb-width: 24px !default;
+$thumb-radius: 25px;
+$thumb-height: 15px;
+$thumb-width: 15px;
 $thumb-shadow-size: 4px !default;
 $thumb-shadow-blur: 4px !default;
 $thumb-shadow-color: rgba(0, 0, 0, .2) !default;
-$thumb-border-width: 2px !default;
-$thumb-border-color: $color-red;
+$thumb-border-width: 0px !default;
+$thumb-border-color: $color-primary;
 
 $track-width: 100% !default;
-$track-height: 8px !default;
+$track-height: 25px;
 $track-shadow-size: 1px !default;
 $track-shadow-blur: 1px !default;
 $track-shadow-color: rgba(0, 0, 0, .2) !default;
-$track-border-width: 0px !default;
-$track-border-color: #cfd8dc !default;
+$track-border-width: 1px !default;
+$track-border-color: $color-grey-darkest;
 
-$track-radius: 5px !default;
+$track-radius: 0px !default;
 $contrast: 5% !default;
 
 $ie-bottom-track-color: darken($track-color, $contrast) !default;
@@ -56,7 +56,7 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
 [type='range'] {
   -webkit-appearance: none;
   background: transparent;
-  margin: $thumb-height / 2 0;
+  margin: 0;
   width: $track-width;
 
   &::-moz-focus-outer {

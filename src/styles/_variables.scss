@@ -1,0 +1,24 @@
+$color-red:                   #ed623b;
+$color-blue:                  #3da3db;
+$color-grey:                  #707275;
+$color-grey-light:            #eceff1;
+$color-black:                 #040710;
+$color-white:                 #fff3eb;
+
+$color-grey-darkest:          #46474b;
+$color-green:                 #3ddb88;
+$color-yellow:                #ebb531;
+
+// $color-primary:               #3bed98;
+$color-primary:               $color-yellow;
+$color-secondary:             $color-blue;
+
+$color-catenary:              $color-white;
+
+$color-interface-grid:        $color-grey-darkest;
+
+$color-debug-grid:            $color-grey-darkest;
+$color-debug-lazy:            $color-grey-darkest;
+$color-debug-lazy-active:     $color-grey;
+$color-debug-brush:           $color-grey;
+$color-debug-pointer:         $color-grey;
