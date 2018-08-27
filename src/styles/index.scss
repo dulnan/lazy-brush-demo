@@ -43,7 +43,7 @@ body {
   font-size: (15 / 25) * 1rem;
   font-family: 'Colfax', sans-serif;
   padding: 0;
-  color: $color-white;
+  color: $color-grey-dark;
   background-color: $color-black;
   user-select: none;
 }
@@ -135,6 +135,7 @@ h2 {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: -0.1px;
+  color: $color-white;
   @media (min-width: 769px) {
     text-align: justify;
     &:after {
@@ -150,6 +151,7 @@ p {
   margin-top: 1rem;
   line-height: 1rem;
   text-align: justify;
+  font-weight: 400;
 }
 
 .range {

@@ -97,10 +97,15 @@ export default class Scene {
 
     this.loop()
 
-    const initX = window.innerWidth / 2
-    const initY = window.innerHeight / 2
-    // this.lazy.update({x: initX, y: initY}, { both: false })
-    this.mouseHasMoved = true
+    window.setTimeout(() => {
+      const initX = window.innerWidth / 2
+      const initY = window.innerHeight / 2
+      this.lazy.update({x: initX - (this.chainLength  / 4), y: initY}, { both: true })
+      this.lazy.update({x: initX + (this.chainLength  / 4), y: initY}, { both: false })
+      this.mouseHasMoved = true
+      this.valuesChanged = true
+      this.clearCanvas()
+    }, 100)
   }
 
   handleTouchStart (e) {
@@ -132,7 +137,7 @@ export default class Scene {
     }
   }
 
-  handleButtonMenu () {
+  handleButtonMenu (e) {
     e.preventDefault()
     document.body.classList.toggle('menu-visible')
   }
@@ -160,6 +165,7 @@ export default class Scene {
     for (const entry of entries) {
       const {left, top, width, height} = entry.contentRect
       this.setCanvasSize(this.canvas.debug, width, width)
+      this.loop({ once: true })
     }
   }
 
@@ -181,8 +187,6 @@ export default class Scene {
     const val = parseInt(e.target.value)
     this.valuesChanged = true
     this.brushRadius = val
-
-    this.slider.lazy.setAttribute('min', val + 10)
   }
 
   handleSliderLazy (e) {
@@ -358,10 +362,10 @@ export default class Scene {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
     ctx.beginPath()
-    ctx.setLineDash([2,2])
+    ctx.setLineDash([5,1])
     // ctx.setLineDash([])
     // ctx.strokeStyle = styleVariables.colorInterfaceGrid
-    ctx.strokeStyle = 'rgba(169,173,183,0.15)'
+    ctx.strokeStyle = 'rgba(150,150,150,0.11)'
     ctx.lineWidth = 1
 
     const gridSize = 25
