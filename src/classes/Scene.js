@@ -38,9 +38,7 @@ export default class Scene {
       this.context[c] = el.getContext('2d')
     })
 
-    this.catenary = new Catenary({
-      chainLength: LAZY_RADIUS
-    })
+    this.catenary = new Catenary()
 
     this.lazy = new LazyBrush({
       radius: LAZY_RADIUS,
@@ -194,7 +192,6 @@ export default class Scene {
     const val = parseInt(e.target.value)
     this.chainLength = val
     this.lazy.setRadius(val)
-    this.catenary.setChainLength(val)
   }
 
   setCanvasSize (canvas, width, height) {
@@ -236,7 +233,7 @@ export default class Scene {
       this.points.push(this.lazy.brush.toObject())
     }
 
-    if (this.isDrawing && (this.lazy.hasMoved() || isDisabled)) {
+    if (this.isDrawing && (this.lazy.brushHasMoved() || isDisabled)) {
 
       this.context.temp.clearRect(0, 0, this.context.temp.canvas.width, this.context.temp.canvas.height)
       this.context.temp.lineWidth = this.brushRadius * 2
@@ -278,7 +275,7 @@ export default class Scene {
       const brush = this.lazy.getBrushCoordinates()
       const angle = this.lazy.getAngle()
       const radius = this.lazy.getRadius()
-      const hasMoved = this.lazy.hasMoved()
+      const hasMoved = this.lazy.brushHasMoved()
       const distance = this.lazy.getDistance()
 
       this.drawInterface(this.context.interface, pointer, brush)
@@ -409,7 +406,7 @@ export default class Scene {
       ctx.lineCap = 'round'
       ctx.setLineDash([2, 4])
       ctx.strokeStyle = styleVariables.colorCatenary
-      this.catenary.drawToCanvas(this.context.interface, brush, pointer)
+      this.catenary.drawToCanvas(this.context.interface, brush, pointer, this.chainLength)
       ctx.stroke()
     }
 

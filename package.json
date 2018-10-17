@@ -22,6 +22,8 @@
     "homepage": "",
     "dependencies": {
         "as3js": "^0.3.3",
+        "catenary-curve": "^1.0.1",
+        "lazy-brush": "^1.0.0",
         "normalize.css": "^8.0.0"
     },
     "devDependencies": {
