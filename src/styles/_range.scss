@@ -53,6 +53,14 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   cursor: not-allowed;
 }
 
+[type='range']:hover::-moz-range-thumb {
+  background: white;
+}
+
+[type='range']:hover::-ms-thumb {
+  background: white;
+}
+
 [type='range']:hover::-webkit-slider-thumb {
   background: white;
 }
@@ -66,14 +74,6 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   color: $color-black;
   &:hover {
     background: $color-black;
-  }
-  &::-webkit-slider-thumb,
-  &::-moz-range-thumb,
-  &::-ms-thumb {
-    .slider:hover & {
-      background: white !important;
-      display: none;
-    }
   }
 
   &::-moz-focus-outer {
