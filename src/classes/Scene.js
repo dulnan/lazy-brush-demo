@@ -162,7 +162,6 @@ export default class Scene {
   handleSidebarResize (entries, observer) {
     for (const entry of entries) {
       const {left, top, width, height} = entry.contentRect
-      this.setCanvasSize(this.canvas.debug, width, width)
       this.loop({ once: true })
     }
   }
@@ -279,7 +278,6 @@ export default class Scene {
       const distance = this.lazy.getDistance()
 
       this.drawInterface(this.context.interface, pointer, brush)
-      this.drawDebug(this.context.debug, pointer, brush, angle, hasMoved, distance, radius)
       this.mouseHasMoved = false
       this.valuesChanged = false
     }
@@ -291,79 +289,15 @@ export default class Scene {
     }
   }
 
-  drawDebug (ctx, pointer, brush, angle, hasMoved, distance, radius) {
-    const degrees = angle * 180 / Math.PI
-    const w = ctx.canvas.width / window.devicePixelRatio
-    const h = ctx.canvas.height / window.devicePixelRatio
-
-    ctx.clearRect(0, 0, w, h)
-
-    ctx.beginPath()
-    // ctx.setLineDash([2, 4])
-    ctx.lineWidth = 1
-    ctx.strokeStyle = styleVariables.colorDebugGrid
-
-    ctx.moveTo(w / 2, 0)
-    ctx.lineTo(w / 2, h)
-
-    ctx.moveTo(0, h / 2)
-    ctx.lineTo(w, h / 2)
-
-    ctx.moveTo(0, 0)
-    ctx.lineTo(w, 0)
-    ctx.lineTo(w, h)
-    ctx.lineTo(0, h)
-    ctx.lineTo(0, 0)
-
-    ctx.stroke()
-    ctx.setLineDash([])
-
-    // Brush
-    ctx.beginPath()
-    ctx.strokeStyle = styleVariables.colorDebugGrid
-    ctx.arc(w / 2, h / 2, this.brushRadius, 0, Math.PI * 2, true)
-    ctx.stroke()
-
-    // Lazy Area
-    ctx.beginPath()
-    ctx.lineWidth = 1
-    ctx.lineCap = 'round'
-    if (distance > radius) {
-      ctx.strokeStyle = styleVariables.colorDebugLazyActive
-      ctx.setLineDash([])
-    } else {
-      ctx.strokeStyle = styleVariables.colorDebugLazy
-      ctx.setLineDash([2, 4])
-    }
-    ctx.arc(w / 2, h / 2, radius, 0, Math.PI * 2, true)
-    ctx.stroke()
-    ctx.setLineDash([])
-
-    // Pointer
-    const pX = (w / 2) - (brush.x - pointer.x)
-    const pY = (h / 2) - (brush.y - pointer.y)
-    ctx.beginPath()
-    ctx.fillStyle = styleVariables.colorDebugPointer
-    ctx.arc(pX, pY, 3, 0, Math.PI * 2, true)
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.lineWidth = 1
-    ctx.strokeStyle = '#444'
-    ctx.moveTo(w / 2, h / 2)
-    ctx.lineTo(pX, pY)
-    ctx.stroke()
-  }
-
   drawGrid (ctx) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
     ctx.beginPath()
     ctx.setLineDash([5,1])
-    // ctx.setLineDash([])
+    ctx.setLineDash([])
     // ctx.strokeStyle = styleVariables.colorInterfaceGrid
-    ctx.strokeStyle = 'rgba(150,150,150,0.11)'
-    ctx.lineWidth = 1
+    ctx.strokeStyle = 'rgba(150,150,150,0.17)'
+    ctx.lineWidth = 0.5
 
     const gridSize = 25
 
@@ -395,7 +329,7 @@ export default class Scene {
 
     // Draw mouse point
     ctx.beginPath()
-    ctx.fillStyle = styleVariables.colorWhite
+    ctx.fillStyle = styleVariables.colorBlack
     ctx.arc(pointer.x, pointer.y, 4, 0, Math.PI * 2, true)
     ctx.fill()
 

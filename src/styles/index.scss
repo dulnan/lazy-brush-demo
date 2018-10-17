@@ -11,11 +11,11 @@ html {
 body {
   height: 100%;
   width: 100%;
-  font-size: (15 / 25) * 1rem;
-  font-family: 'ff-real-text-pro-2', sans-serif;
+  font-size: (16 / 25) * 1rem;
+  font-family: 'frank-new', sans-serif;
   padding: 0;
-  color: $color-grey-dark;
-  background-color: $color-black;
+  color: $color-black;
+  background-color: $color-white;
   user-select: none;
 }
 
@@ -23,25 +23,28 @@ a {
   color: inherit;
 }
 
-button {
+button, .button {
+  box-sizing: border-box;
   cursor: pointer;
   outline: none;
-  font-weight: 300;
+  font-weight: bold;
   background-color: transparent;
   border: none;
   padding: 0;
   text-align: left;
-  border: 1px solid;
-  color: $color-white;
+  border: 3px solid $color-black;
+  color: $color-black;
   text-align: center;
   min-height: 2rem;
   min-width: 2rem;
   -webkit-appearance: none;
   appearance: none;
+  display: block;
+  line-height: 1;
 
   &.disabled {
-    color: $color-grey-darkest;
-    border-color: $color-grey-darkest;
+    color: $color-grey-light;
+    border-color: $color-grey-light;
   }
 
   &:hover {
@@ -50,7 +53,8 @@ button {
 
   @media (min-width: 769px) {
     &:hover{
-      background-color: $color-grey-darkest;
+      background-color: $color-black;
+      color: $color-white;
     }
 
     &:active{
@@ -65,37 +69,53 @@ button {
   display: block;
 }
 
-.button-menu {
+button,
+.button {
   svg {
     fill: currentColor;
+  }
+}
+
+.button-github {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  @media (max-width: 768px) {
+    display: none;
+    .menu-visible & {
+      display: flex;
+    }
+  }
+  svg {
+    width: 0.75rem;
   }
 }
 
 h1 {
   font-size: (24 / 25) * 1rem;
   line-height: (28 / 25) * 1rem;
-  font-weight: 800;
-  transform: translate(-1px, 0);
+  font-weight: 900;
   margin: 0;
-  margin-right: -2px;
-  letter-spacing: 1px;
-  height: 1rem;
   text-transform: uppercase;
-  color: $color-primary;
-  font-family: 'ff-real-headline-pro';
-  @media (min-width: 769px) {
-    font-size: (47 / 25) * 1rem;
-    line-height: (58 / 25) * 1rem;
-    transform: translate(-2px, 0);
-    height: 2rem;
+  white-space: nowrap;
+  padding-bottom: 1rem;
+  pointer-events: none;
+  &:after {
+    content: "";
+    width: (19 / 25) * 1rem;
+    height: (19 / 25) * 1rem;
+    display: inline-block;
+    background: $color-primary;
+    border: 3px solid $color-black;
+    border-radius: 100%;
+    float: right;
+    box-shadow: inset 0 0 0 5px white;
   }
   @media (min-width: 769px) {
-    text-align: justify;
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 100%;
-    }
+    font-size: (35 / 25) * 1rem;
+    line-height: 1rem;
+    margin-left: (-3 / 25) * 1rem;
   }
 }
 
@@ -122,7 +142,6 @@ p {
   margin: 0;
   margin-top: 1rem;
   line-height: 1rem;
-  text-align: justify;
   font-weight: 400;
 }
 
@@ -138,10 +157,10 @@ p {
   }
 }
 
-label, button {
+label, button, .button {
   text-transform: uppercase;
-  font-weight: 500;
-  font-size: (13 / 25) * 1rem;
+  font-weight: bold;
+  font-size: (12 / 25) * 1rem;
 }
 
 label {
@@ -171,7 +190,7 @@ label {
   @media (max-width: 768px) {
     position: relative;
     z-index: 100;
-    padding: 1rem;
+    padding: 1rem 1rem 0;
   }
 }
 
@@ -179,11 +198,9 @@ label {
   p {
     margin-top: 0;
     margin-bottom: 1rem;
-    @media (min-width: 769px) {
-      margin-top: 1rem;
-      margin-bottom: 0;
-      min-height: 175px;
-    }
+    padding-top: (22 / 25) * 1rem;
+    border-top: 3px solid;
+    text-align: justify;
   }
   @media (max-width: 768px) {
     padding: 0 1rem;
@@ -209,22 +226,20 @@ label {
 
 main {
   @media (min-width: 769px) {
-    background: rgba($color-black, 0.5);
-    padding: 1rem;
-    padding-bottom: 0;
+    padding: (22 / 25) * 1rem;
     z-index: 50;
     margin-top: 0;
-    width: 12rem;
+    width: 10rem;
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    top: 1rem;
+    left: 1rem;
+    border: 3px solid $color-black;
   }
 }
 
 .slider {
-  display: flex;
   margin-bottom: 1rem;
+  cursor: pointer;
   label {
     flex: 0 0 6rem;
   }
@@ -281,5 +296,11 @@ main {
     .menu-visible & {
       opacity: 0.1;
     }
+  }
+}
+
+.hidden-desktop {
+  @media (min-width: 769px) {
+    display: none;
   }
 }

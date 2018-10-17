@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
       interface: 'canvas_interface',
       drawing: 'canvas_drawing',
       temp: 'canvas_temp',
-      debug: 'canvas_debug',
       grid: 'canvas_grid'
     },
     slider: {

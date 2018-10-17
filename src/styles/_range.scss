@@ -5,11 +5,11 @@
 // MIT License
 
 $track-color: transparent;
-$thumb-color: $color-primary;
+$thumb-color: $color-black;
 
 $thumb-radius: 25px;
-$thumb-height: 15px;
-$thumb-width: 15px;
+$thumb-height: 13px;
+$thumb-width: 13px;
 $thumb-shadow-size: 4px !default;
 $thumb-shadow-blur: 4px !default;
 $thumb-shadow-color: rgba(0, 0, 0, .2) !default;
@@ -21,8 +21,8 @@ $track-height: 25px;
 $track-shadow-size: 1px !default;
 $track-shadow-blur: 1px !default;
 $track-shadow-color: rgba(0, 0, 0, .2) !default;
-$track-border-width: 1px !default;
-$track-border-color: $color-grey-darkest;
+$track-border-width: 3px !default;
+$track-border-color: $color-black;
 
 $track-radius: 0px !default;
 $contrast: 5% !default;
@@ -33,7 +33,7 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
 }
 
 @mixin track {
-  cursor: default;
+  cursor: pointer;
   height: $track-height;
   transition: all .2s ease;
   width: $track-width;
@@ -44,7 +44,7 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   background: $thumb-color;
   border: $thumb-border-width solid $thumb-border-color;
   border-radius: $thumb-radius;
-  cursor: default;
+  cursor: pointer;
   height: $thumb-height + $adjustment;
   width: $thumb-width + $adjustment;
 }
@@ -53,11 +53,28 @@ $ie-bottom-track-color: darken($track-color, $contrast) !default;
   cursor: not-allowed;
 }
 
+[type='range']:hover::-webkit-slider-thumb {
+  background: white;
+}
+
 [type='range'] {
   -webkit-appearance: none;
   background: transparent;
   margin: 0;
   width: $track-width;
+  cursor: pointer;
+  color: $color-black;
+  &:hover {
+    background: $color-black;
+  }
+  &::-webkit-slider-thumb,
+  &::-moz-range-thumb,
+  &::-ms-thumb {
+    .slider:hover & {
+      background: white !important;
+      display: none;
+    }
+  }
 
   &::-moz-focus-outer {
     border: 0;
