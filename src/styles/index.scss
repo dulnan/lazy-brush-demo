@@ -27,7 +27,7 @@ button, .button {
   box-sizing: border-box;
   cursor: pointer;
   outline: none;
-  font-weight: bold;
+  font-weight: 700;
   background-color: transparent;
   border: none;
   padding: 0;
@@ -95,7 +95,7 @@ button,
 h1 {
   font-size: (24 / 25) * 1rem;
   line-height: (28 / 25) * 1rem;
-  font-weight: 900;
+  font-weight: 700;
   margin: 0;
   text-transform: uppercase;
   white-space: nowrap;
@@ -116,25 +116,6 @@ h1 {
     font-size: (35 / 25) * 1rem;
     line-height: 1rem;
     margin-left: (-3 / 25) * 1rem;
-  }
-}
-
-h2 {
-  margin: 0;
-  font-size: (15 / 25) * 1rem;
-  height: 1rem;
-  line-height: 1rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: -0.1px;
-  color: $color-white;
-  @media (min-width: 769px) {
-    text-align: justify;
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 100%;
-    }
   }
 }
 
@@ -159,7 +140,7 @@ p {
 
 label, button, .button {
   text-transform: uppercase;
-  font-weight: bold;
+  font-weight: 700;
   font-size: (12 / 25) * 1rem;
 }
 
