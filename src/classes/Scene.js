@@ -169,7 +169,6 @@ export default class Scene {
   handleCanvasResize (entries, observer) {
     for (const entry of entries) {
       const {left, top, width, height} = entry.contentRect
-      console.log(height)
       this.setCanvasSize(this.canvas.interface, width, height)
       this.setCanvasSize(this.canvas.drawing, width, height)
       this.setCanvasSize(this.canvas.temp, width, height)
