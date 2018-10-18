@@ -200,7 +200,7 @@ export default class Scene {
     let dpi = this.dpi
     
     // reduce canvas size for hidpi desktop screens
-    if (width > 1024) {
+    if (window.innerWidth > 1024) {
       dpi = Math.min(this.dpi, maxDpi)
     }
 
@@ -222,8 +222,9 @@ export default class Scene {
     this.isPressing = false
     this.points.length = 0
 
-    const width = this.canvas.drawing.width 
-    const height = this.canvas.drawing.height
+    const dpi = window.innerWidth > 1024 ? 1 : window.devicePixelRatio
+    const width = this.canvas.temp.width / dpi
+    const height = this.canvas.temp.height / dpi
 
     this.context.drawing.drawImage(this.canvas.temp, 0, 0, width, height)
     this.context.temp.clearRect(0, 0, width, height)
