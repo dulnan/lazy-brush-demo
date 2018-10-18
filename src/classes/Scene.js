@@ -197,7 +197,12 @@ export default class Scene {
   }
 
   setCanvasSize (canvas, width, height, maxDpi = 4) {
-    let dpi = Math.min(this.dpi, maxDpi)
+    let dpi = this.dpi
+    
+    // reduce canvas size for hidpi desktop screens
+    if (width > 1024) {
+      dpi = Math.min(this.dpi, maxDpi)
+    }
 
     canvas.width = width * dpi
     canvas.height = height * dpi
