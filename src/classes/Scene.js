@@ -60,6 +60,8 @@ export default class Scene {
 
     this.brushRadius = BRUSH_RADIUS
     this.chainLength = LAZY_RADIUS
+
+    this.dpi = 1
   }
 
   init () {
@@ -167,12 +169,14 @@ export default class Scene {
   }
 
   handleCanvasResize (entries, observer) {
+    this.dpi = window.devicePixelRatio
+
     for (const entry of entries) {
-      const {left, top, width, height} = entry.contentRect
-      this.setCanvasSize(this.canvas.interface, width, height)
-      this.setCanvasSize(this.canvas.drawing, width, height)
-      this.setCanvasSize(this.canvas.temp, width, height)
-      this.setCanvasSize(this.canvas.grid, width, height)
+      const { width, height } = entry.contentRect
+      this.setCanvasSize(this.canvas.interface, width, height, 1.25)
+      this.setCanvasSize(this.canvas.drawing, width, height, 1)
+      this.setCanvasSize(this.canvas.temp, width, height, 1)
+      this.setCanvasSize(this.canvas.grid, width, height, 2)
 
       this.drawGrid(this.context.grid)
       this.loop({ once: true })
@@ -192,12 +196,14 @@ export default class Scene {
     this.lazy.setRadius(val)
   }
 
-  setCanvasSize (canvas, width, height) {
-    canvas.width = width * window.devicePixelRatio
-    canvas.height = height * window.devicePixelRatio
+  setCanvasSize (canvas, width, height, maxDpi = 4) {
+    let dpi = Math.min(this.dpi, maxDpi)
+
+    canvas.width = width * dpi
+    canvas.height = height * dpi
     canvas.style.width = width
     canvas.style.height = height
-    canvas.getContext('2d').scale(window.devicePixelRatio, window.devicePixelRatio)
+    canvas.getContext('2d').scale(dpi, dpi)
   }
 
   handlePointerDown (e) {
@@ -211,8 +217,8 @@ export default class Scene {
     this.isPressing = false
     this.points.length = 0
 
-    const width = this.canvas.temp.width / window.devicePixelRatio
-    const height = this.canvas.temp.height / window.devicePixelRatio
+    const width = this.canvas.drawing.width 
+    const height = this.canvas.drawing.height
 
     this.context.drawing.drawImage(this.canvas.temp, 0, 0, width, height)
     this.context.temp.clearRect(0, 0, width, height)
@@ -271,10 +277,6 @@ export default class Scene {
     if (this.mouseHasMoved || this.valuesChanged) {
       const pointer = this.lazy.getPointerCoordinates()
       const brush = this.lazy.getBrushCoordinates()
-      const angle = this.lazy.getAngle()
-      const radius = this.lazy.getRadius()
-      const hasMoved = this.lazy.brushHasMoved()
-      const distance = this.lazy.getDistance()
 
       this.drawInterface(this.context.interface, pointer, brush)
       this.mouseHasMoved = false
